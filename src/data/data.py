@@ -38,7 +38,7 @@ def generate_price_interim_file(root):
 def generate_financial_statement_interim_file(root):
     company = os.path.basename(root)
 
-    if company == "AMZN":
+    if not company == "FB":
         return
     
     fs_df = pd.read_excel(os.path.join(root, "fs.xlsx"), sheet_name="transpose complete")
