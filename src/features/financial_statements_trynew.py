@@ -63,6 +63,6 @@ for i in range(Ncolumns_price+1, Ntotal):
 
 #final[Ntotal-1, :] = final[Ntotal-1,:]/final[0,:]*100
 #final[Ntotal-2, :] = final[Ntotal-2,:]/final[0,:]*100    
-# final[0, :] = final[0, :]/final[0,0]*100
-# final[1, :] = final[1, :]/final[1,0]*100
+final[0, :] = final[0, :]/final[0,0]*100
+final[1, :] = final[1, :]/final[1,0]*100
 np.savetxt(save_txt, final.transpose())

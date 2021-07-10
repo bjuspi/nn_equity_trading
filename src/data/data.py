@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import pandas as pd
 
 currentdir = os.path.dirname(os.path.realpath(__file__))
@@ -7,29 +8,50 @@ rootdir = os.path.dirname(parentdir)
 datadir = os.path.join(rootdir, "data")
 rawdatadir = os.path.join(datadir, "raw")
 
+reference_date = np.datetime64("2013-03-31")
+
 def main():
     for root, subdirs, files in os.walk(rawdatadir):
-        print('--\nroot = ' + root)
-        print(subdirs)
-        print(files)
+        generate_interim_files(root, files)
 
-        generate_input_files(root, subdirs, files)
-
-def generate_input_files(root, subdirs, files):
+def generate_interim_files(root, files):
     if "price.xlsx" in files:
-        company = os.path.basename(root)
+        generate_price_interim_file(root)
 
-        df = pd.read_excel(os.path.join(root, "price.xlsx"))
-        
-        header = df.iloc[0]
-        df = df[1:]
-        df.columns = header
-        df["Dates"] = df.index
+    if "fs.xlsx" in files: 
+        generate_financial_statement_interim_file(root)
 
-        destinationdir = os.path.join(os.path.join(datadir, "interim"), company)
+def generate_price_interim_file(root):
+    company = os.path.basename(root)
 
-        df.to_csv(os.path.join(destinationdir, "price.txt"), header=False, sep="\t", index=False)
-        df.to_csv(os.path.join(destinationdir, "price.csv"))
+    price_df = pd.read_excel(os.path.join(root, "price.xlsx"), header=1)
+    price_df["Dates"] = (price_df["Dates"] - reference_date).dt.days
+    
+    destinationdir = os.path.join(os.path.join(datadir, "interim"), company)
+
+    if not os.path.isdir(destinationdir):
+        os.mkdir(destinationdir)
+
+    price_df.to_csv(os.path.join(destinationdir, "price.txt"), header=False, sep="\t", index=False)
+    price_df.to_csv(os.path.join(destinationdir, "price.csv"))
+
+def generate_financial_statement_interim_file(root):
+    company = os.path.basename(root)
+
+    if company == "AMZN":
+        return
+    
+    fs_df = pd.read_excel(os.path.join(root, "fs.xlsx"), sheet_name="transpose complete")
+    fs_df["Financial release date"] = (fs_df["Financial release date"] - reference_date).dt.days
+    fs_df["Financial Date"] = (fs_df["Financial Date"] - reference_date).dt.days
+    
+    destinationdir = os.path.join(os.path.join(datadir, "interim"), company)    
+    
+    if not os.path.isdir(destinationdir):
+        os.mkdir(destinationdir)
+    
+    fs_df.to_csv(os.path.join(destinationdir, "fs.txt"), header=False, sep="\t", index=False)
+    fs_df.to_csv(os.path.join(destinationdir, "fs.csv"))
 
 if __name__ == "__main__":
     main() 
