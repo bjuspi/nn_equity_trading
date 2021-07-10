@@ -1,20 +1,24 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jun 17 16:27:50 2021
-
-@author: Johanes Suhardjo
-"""
-
+import os
 import numpy as np
+
+currentdir = os.path.dirname(os.path.realpath(__file__))
+parentdir = os.path.dirname(currentdir)
+rootdir = os.path.dirname(parentdir)
+datadir = os.path.join(rootdir, "data")
+interimdatadir = os.path.join(datadir, "interim")
+
 #FIRST COLUMN SHOULD BE THE NUMBER OF DAY, SCND THE OPENING PRICE, SIXTH THE VOLUME AND SO ON
-price_date_txt = "FB/price.txt" 
+# price_date_txt = "FB/price.txt" 
+price_date_txt = os.path.join(os.path.join(interimdatadir, "FB"), "price.txt")
 #THE COUNT STARTS FROM VOLUME
 Ncolumns_price = 7 
 #FIRST COLUMN IS FINANCIAL RELEASE DATE, THE SECOND SHOULD BE FINANCIAL STATEMENT DATE
-fs_txt = "FB/fs.txt" 
+# fs_txt = "FB/fs.txt" 
+fs_txt = os.path.join(os.path.join(interimdatadir, "FB"), "fs.txt")
 #UNLIKE ABOVE THIS INCLUDES THE DATES, SO MINIMUM IS 2
 Ncolumns = 15 
-save_txt = "FB/final_input.txt"
+# save_txt = "FB/final_input.txt"
+save_txt = os.path.join(os.path.join(interimdatadir, "FB"), "final_input.txt")
 
 price_date = np.loadtxt(price_date_txt, usecols=0, unpack=True)
 fs_release_date, fs_date = np.loadtxt(fs_txt, usecols=(0,1), unpack=True)
@@ -59,6 +63,6 @@ for i in range(Ncolumns_price+1, Ntotal):
 
 #final[Ntotal-1, :] = final[Ntotal-1,:]/final[0,:]*100
 #final[Ntotal-2, :] = final[Ntotal-2,:]/final[0,:]*100    
-final[0, :] = final[0, :]/final[0,0]*100
-final[1, :] = final[1, :]/final[1,0]*100
+# final[0, :] = final[0, :]/final[0,0]*100
+# final[1, :] = final[1, :]/final[1,0]*100
 np.savetxt(save_txt, final.transpose())
